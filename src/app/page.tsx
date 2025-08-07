@@ -2,9 +2,10 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { loginApi } from './utils/api'
-import { setToken } from './utils/auth'
+import { setToken } from '@/redux/slices/authSlice'
+import { loginApi } from '@/app/utils/api'
 import { AxiosResponse } from 'axios'
+import { useAppDispatch } from '@/redux/hook'
 
 type LoginResponse = {
   access_token: string;
@@ -23,53 +24,51 @@ type ApiError = {
 };
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [errorMsg, setErrorMsg] = useState('')
+  const router = useRouter();
+  const dispatch = useAppDispatch();
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    debugger
-    e.preventDefault()
-    setLoading(true)
-    setErrorMsg('')
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-    // Form validation
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+
     if (!username.trim() || !password.trim()) {
-      setErrorMsg('Username and password are required')
-      setLoading(false)
-      return
+      setErrorMsg('Username and password are required');
+      setLoading(false);
+      return;
     }
 
-    loginApi(username, password)
-      .then((res) => {
-        const response = res as AxiosResponse<LoginResponse>;
-        if (response?.data?.access_token) {
-          // Use auth utility to set token
-          setToken(response.data.access_token)
-          console.log('✅ Login successful - Token stored')
-          router.push('/dashboard')
-        } else {
-          setErrorMsg(response.data?.message || 'Invalid credentials')
-        }
-      })
-      .catch((err: ApiError) => {
-        console.error('Login error:', err)
-        
-        if (err.response) {
-          // Server responded with error status
-          setErrorMsg(err.response.data?.message || `Error ${err.response.status}: Login failed`)
-        } else if (err.request) {
-          // Network error
-          setErrorMsg('Network error: Unable to connect to server')
-        } else {
-          // Other errors
-          setErrorMsg(err.message || 'Login failed')
-        }
-      })
-      .finally(() => setLoading(false))
-  }
+    try {
+      const res = await loginApi(username, password);
+      const response = res as AxiosResponse<LoginResponse>;
+
+      if (response?.data?.access_token) {
+        dispatch(setToken(response.data.access_token)); // ✅ Redux token set
+        console.log('✅ Login successful');
+        router.push('/dashboard');
+      } else {
+        setErrorMsg(response.data?.message || 'Invalid credentials');
+      }
+    } catch (err: any) {
+      const error = err as ApiError;
+      console.error('Login error:', error);
+
+      if (error.response) {
+        setErrorMsg(error.response.data?.message || `Error ${error.response.status}: Login failed`);
+      } else if (error.request) {
+        setErrorMsg('Network error: Unable to connect to server');
+      } else {
+        setErrorMsg(error.message || 'Login failed');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -81,7 +80,7 @@ export default function LoginPage() {
             {errorMsg}
           </div>
         )}
-        
+
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Username</label>
           <input
@@ -93,7 +92,7 @@ export default function LoginPage() {
             required
           />
         </div>
-        
+
         <div className="mb-6">
           <label className="block text-sm font-medium mb-1">Password</label>
           <input
@@ -105,7 +104,7 @@ export default function LoginPage() {
             required
           />
         </div>
-        
+
         <button
           type="submit"
           disabled={loading || !username.trim() || !password.trim()}
@@ -115,5 +114,5 @@ export default function LoginPage() {
         </button>
       </form>
     </div>
-  )
+  );
 }

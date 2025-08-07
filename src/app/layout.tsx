@@ -1,16 +1,21 @@
-import './globals.css'
-import { ReactNode } from 'react'
-import 'react-toastify/dist/ReactToastify.css';
+// src/app/layout.tsx
+import { Providers } from "@/redux/provider";
+import "./globals.css";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: 'Login App',
-  description: 'Login to dashboard using Next.js',
-}
+  title: "Next TODO",
+  description: "Todo app using Next.js and Redux Toolkit",
+};
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={inter.className}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
-  )
+  );
 }
