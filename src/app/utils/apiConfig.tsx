@@ -1,38 +1,40 @@
-import axios from "axios";
+import axios, {
+  Method,
+  AxiosResponse,
+  RawAxiosRequestHeaders,
+} from "axios";
 
-const defaultHeaders = {
+const defaultHeaders: RawAxiosRequestHeaders = {
   "Cache-Control": "no-cache",
   Pragma: "no-cache",
   Expires: "0",
 };
 
-type apiPath = {
+type ApiPath<T = unknown> = {
   url: string;
-  data?: any;
-  method: string;
-  headers?: any;
-  noHeaders?: any;
+  data?: T;
+  method: Method;
+  headers?: RawAxiosRequestHeaders;
+  noHeaders?: boolean;
 };
 
-export function apiClient({
+export function apiClient<T = unknown>({
   url,
-  data = {},
-  method = "",
+  data = {} as T,
+  method = "GET",
   headers = {},
-  noHeaders,
+  noHeaders = false,
   ...rest
-}: apiPath) {
-  return new Promise(async (resolve, reject) => {
+}: ApiPath<T>): Promise<AxiosResponse> {
+  return new Promise((resolve, reject) => {
     const accessToken = localStorage.getItem("token");
 
-    // Prepare headers with authorization
-    const requestHeaders = {
+    const requestHeaders: RawAxiosRequestHeaders = {
       ...(noHeaders ? {} : defaultHeaders),
       ...headers,
     };
 
-    // Add Authorization header if token exists
-    if (accessToken && accessToken !== "" && accessToken !== null) {
+    if (accessToken) {
       requestHeaders["Authorization"] = `Bearer ${accessToken}`;
     }
 
@@ -43,11 +45,7 @@ export function apiClient({
       data,
       ...rest,
     })
-      .then((res) => {
-        resolve(res);
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 }
