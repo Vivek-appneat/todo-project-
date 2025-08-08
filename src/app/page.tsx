@@ -1,14 +1,13 @@
-'use client'
-
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { setToken } from '@/redux/slices/authSlice'
-import { loginApi } from '@/app/utils/api'
-import { AxiosResponse } from 'axios'
-import { useAppDispatch } from '@/redux/hook'
+"use client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { setToken } from "@/redux/slices/authSlice";
+import { loginApi } from "@/app/utils/api";
+import { AxiosResponse } from "axios";
+import { useAppDispatch } from "@/redux/hook";
 
 type LoginResponse = {
-  access_token: string;
+  accessToken: string;
   message?: string;
 };
 
@@ -27,52 +26,66 @@ export default function LoginPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMsg('');
+  setErrorMsg("");
 
     if (!username.trim() || !password.trim()) {
-      setErrorMsg('Username and password are required');
+      setErrorMsg("Username and password are required");
       setLoading(false);
       return;
     }
 
-    try {
-      const res = await loginApi(username, password);
-      const response = res as AxiosResponse<LoginResponse>;
+    loginApi(username, password)
+      .then((res) => {
+        const response = res as AxiosResponse<LoginResponse>;
+        const token = response?.data?.accessToken;
 
-      if (response?.data?.access_token) {
-        dispatch(setToken(response.data.access_token)); // ✅ Redux token set
-        console.log('✅ Login successful');
-        router.push('/dashboard');
-      } else {
-        setErrorMsg(response.data?.message || 'Invalid credentials');
-      }
-    } catch (err: any) {
-      const error = err as ApiError;
-      console.error('Login error:', error);
+        if (token && token !== "undefined" && token !== "null") {
+          dispatch(setToken(token)); // Redux in token set
+          console.log("Login successful");
+          router.push("/dashboard");
+        } else {
+          debugger
+          setErrorMsg(response?.data?.message || "Invalid credentials");
+        }
+      })
+      .catch((err: ApiError) => {
+        debugger
+        console.error("Login error", err);
 
-      if (error.response) {
-        setErrorMsg(error.response.data?.message || `Error ${error.response.status}: Login failed`);
-      } else if (error.request) {
-        setErrorMsg('Network error: Unable to connect to server');
-      } else {
-        setErrorMsg(error.message || 'Login failed');
-      }
-    } finally {
-      setLoading(false);
-    }
+        if (err.response) {
+          debugger
+          setErrorMsg(
+            err.response.data?.message ||
+              `Error ${err.response.status}: Login failed`
+          );
+        } else if (err.request) {
+          debugger
+          setErrorMsg("Network error Unable to connect to server");
+        } else {
+          debugger
+          setErrorMsg(err.message || "Login failed");
+        }
+      })
+      .finally(() => {
+        debugger
+        setLoading(false);
+      });
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-80">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white p-8 rounded shadow-md w-80"
+      >
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
         {errorMsg && (
@@ -110,7 +123,7 @@ export default function LoginPage() {
           disabled={loading || !username.trim() || !password.trim()}
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>

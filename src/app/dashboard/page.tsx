@@ -45,6 +45,8 @@ const DashboardPage = () => {
     "pending"
   );
   const [editDueDate, setEditDueDate] = useState("");
+  console.log(editDueDate,editingId,todos,"editDueDate");
+  
 
   // Check authentication on component mount
   useEffect(() => {
@@ -140,6 +142,7 @@ const DashboardPage = () => {
       .finally(() => setLoading(false));
   };
   const handleUpdate = (id: number) => {
+    debugger
     setLoading(true);
     setMessage("");
 
@@ -149,17 +152,18 @@ const DashboardPage = () => {
       status: editStatus,
       due_date: editDueDate || null,
     })
-      .then(() => {
-        setMessage("Todo updated successfully!");
-        setMessageType("success");
-        setEditingId(null);
-        fetchTodos();
-      })
-      .catch((err: ApiError) => {
-        console.error("Update error:", err);
-        if (err.response) {
-          setMessage(
-            err.response.data?.message ||
+    
+    .then(() => {
+      setMessage("Todo updated successfully!");
+      setMessageType("success");
+      setEditingId(null);
+      fetchTodos();
+    })
+    .catch((err: ApiError) => {
+      console.error("Update error:", err);
+      if (err.response) {
+        setMessage(
+          err.response.data?.message ||
               `Error ${err.response.status}: Failed to update todo`
           );
         } else if (err.request) {
@@ -384,6 +388,7 @@ const DashboardPage = () => {
                         </span>
                       )}
                     </td>
+                    
 
                     <td className="p-3 border text-center">
                       {editingId === todo.id ? (
@@ -420,11 +425,12 @@ const DashboardPage = () => {
                         <>
                           <button
                             onClick={() => {
+                              debugger
                               setEditingId(todo.id);
                               setEditTitle(todo.title);
                               setEditDescription(todo.description || "");
                               setEditStatus(todo.status);
-                              setEditDueDate(todo.due_date ?? "");
+                              setEditDueDate(todo.due_date ? new Date(todo.due_date).toISOString().split("T")[0] : "");
                             }}
                             className="text-blue-600 hover:underline"
                           >

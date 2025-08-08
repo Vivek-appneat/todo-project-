@@ -52,10 +52,10 @@ export const deleteTodo = async (id: number) => {
   });
 };
 
-// export const toggleTodo = async (id: number, status: string) => {
-//   return apiClient({
-//     url: PATH.todos.toggleTodo(id),
-//     method: "PATCH",
-//     data: { status },
-//   });
-// };
+export const toggleTodo = async (id: number, status: string) => {
+  return apiClient({
+    url: PATH.todos.toggleTodo(id),
+    method: "PATCH",
+    data: { status },
+  });
+};
