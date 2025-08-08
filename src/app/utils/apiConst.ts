@@ -1,6 +1,6 @@
 // api path base url
 const Base_URL = process.env.NEXT_PUBLIC_API_URL;
-// export const Base_URL = "http://192.168.1.14:3000";
+// export const Base_URL = "https://todo-l0so.onrender.com";
 console.log(Base_URL,"Base_URL");
 
 export const API_ENDPOINT = `${Base_URL}`;
