@@ -6,7 +6,7 @@ export type Todo = {
   title: string;
   description: string;
   status: "pending" | "completed";
-  due_date: string | null;
+  dueDate: string | null;
 };
 
 interface TodoState {

@@ -1,5 +1,8 @@
 // api path base url
-export const Base_URL = "http://192.168.1.14:3000";
+const Base_URL = process.env.NEXT_PUBLIC_API_URL;
+// export const Base_URL = "http://192.168.1.14:3000";
+console.log(Base_URL,"Base_URL");
+
 export const API_ENDPOINT = `${Base_URL}`;
 
 // api path

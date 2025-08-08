@@ -23,7 +23,7 @@ export const addTodo = async (data: {
   title: string;
   description: string;
   status: "pending" | "completed";
-  due_date: string | null;
+  dueDate: string | null;
 }) => {
   return apiClient({
     url: PATH.todos.createTodo,
@@ -36,7 +36,7 @@ export const updateTodo = async (id: number, data: {
   title?: string;
   description?: string;
   status?: "pending" | "completed";
-  due_date?: string | null;
+  dueDate?: string | null;
 }) => {
   return apiClient({
     url: PATH.todos.updateTodo(id),

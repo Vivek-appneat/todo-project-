@@ -11,7 +11,7 @@ type Todo = {
   title: string;
   description: string;
   status: "pending" | "completed";
-  due_date: string | null;
+  dueDate: string | null;
 };
 
 type ApiError = {
@@ -59,6 +59,7 @@ const DashboardPage = () => {
   }, [router]);
 
   const fetchTodos = () => {
+    debugger
     setFetching(true);
     setMessage("");
 
@@ -106,7 +107,7 @@ const DashboardPage = () => {
       title: title.trim(),
       description: description.trim(),
       status,
-      due_date: dueDate || null,
+      dueDate: dueDate || null,
     };
 
     addTodo(payload)
@@ -150,7 +151,7 @@ const DashboardPage = () => {
       title: editTitle.trim(),
       description: editDescription.trim(),
       status: editStatus,
-      due_date: editDueDate || null,
+      dueDate: editDueDate || null,
     })
     
     .then(() => {
@@ -398,8 +399,8 @@ const DashboardPage = () => {
                           onChange={(e) => setEditDueDate(e.target.value)}
                           className="border px-2 py-1 rounded"
                         />
-                      ) : todo.due_date ? (
-                        new Date(todo.due_date).toLocaleDateString()
+                      ) : todo.dueDate ? (
+                        new Date(todo.dueDate).toLocaleDateString()
                       ) : (
                         "—"
                       )}
@@ -430,7 +431,7 @@ const DashboardPage = () => {
                               setEditTitle(todo.title);
                               setEditDescription(todo.description || "");
                               setEditStatus(todo.status);
-                              setEditDueDate(todo.due_date ? new Date(todo.due_date).toISOString().split("T")[0] : "");
+                              setEditDueDate(todo.dueDate ? new Date(todo.dueDate).toISOString().split("T")[0] : "");
                             }}
                             className="text-blue-600 hover:underline"
                           >
